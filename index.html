@@ -1,248 +1,62 @@
 <!DOCTYPE html>
-<html ng-app="studentApp">
-<head>
-  <title>AngularJS Filters & Directives Example</title>
-  <!-- AngularJS CDN (1.8.2 is stable and supports most modern browsers) -->
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      padding: 20px;<!DOCTYPE html>
 <html lang="en" ng-app="eliteApp">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elite Resident Portal - AngularJS</title>
+  <title>Home - Elite Resident Portal</title>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 20px; }
-    .card { transition: all 0.3s; margin-bottom: 20px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .card:hover { transform: scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-    .highlight { background-color: #ffe066 !important; color: #333 !important; }
-    .search-box { max-width: 500px; margin: 0 auto 30px; }
-    h1 { color: #e3881d; text-align: center; margin-bottom: 30px; font-family: Georgia, serif; }
-    button:focus { outline: 3px solid #ffd700; }
+    body { background: linear-gradient(135deg, #fbe9cf, #ffd47e); min-height: 100vh; font-family: Arial, sans-serif; }
+    .hero { text-align: center; padding: 100px 20px; color: #6f412d; }
+    .card { background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .card:hover { transform: scale(1.05); }
+    h1 { color: #e3881d; font-family: Georgia, serif; }
   </style>
 </head>
-<body ng-controller="ResidentController">
+<body ng-controller="HomeController">
+
+  <div class="hero">
+    <h1>Welcome to Elite Resident Portal</h1>
+    <p class="lead">Your community hub for seamless living, bookings, complaints & more.</p>
+    <button class="btn btn-warning btn-lg" ng-click="showWelcome()">Get Started</button>
+    <p ng-show="welcomeShown" class="mt-3">Hello {{ userName }}! Explore the portal.</p>
+  </div>
 
   <div class="container">
-    <h1>Elite Resident Community - Residents Dashboard</h1>
-
-    <!-- Search Input with ng-focus, ng-blur -->
-    <div class="search-box">
-      <input type="text" 
-             class="form-control form-control-lg" 
-             placeholder="Search by name, apartment or status..." 
-             ng-model="searchQuery"
-             ng-focus="onFocus()"
-             ng-blur="onBlur()"
-             ng-mouseenter="onMouseEnterSearch()"
-             ng-mouseleave="onMouseLeaveSearch()">
-    </div>
-
-    <!-- Residents List with ng-repeat + filter -->
     <div class="row">
-      <div class="col-md-4" 
-           ng-repeat="resident in residents | filter:searchQuery | orderBy:'name'">
-        <div class="card" 
-             ng-class="{highlight: resident.isHovered}"
-             ng-mouseenter="hoverIn(resident)"
-             ng-mouseleave="hoverOut(resident)">
-          <div class="card-body">
-            <h5 class="card-title">{{ resident.name }}</h5>
-            <p class="card-text">
-              <strong>Apartment:</strong> {{ resident.apartment }}<br>
-              <strong>Complaints:</strong> {{ resident.complaints }}<br>
-              <strong>Status:</strong> {{ resident.status }}<br>
-              <strong>Category:</strong> {{ resident.category }}
-            </p>
-
-            <!-- ng-click to toggle extra details -->
-            <button class="btn btn-warning btn-sm" 
-                    ng-click="toggleDetails(resident)">
-              {{ resident.showDetails ? 'Hide Details' : 'Show Details' }}
-            </button>
-
-            <div ng-show="resident.showDetails" class="mt-3">
-              <p><strong>ID:</strong> {{ resident.id }}</p>
-              <p><strong>Extra Info:</strong> Registered on {{ resident.registered | date:'medium' }}</p>
-            </div>
-          </div>
+      <div class="col-md-4">
+        <div class="card p-4 text-center">
+          <h4>Quick Bookings</h4>
+          <p>Reserve gym, pool, clubhouse instantly.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4 text-center">
+          <h4>Raise Complaints</h4>
+          <p>Track maintenance & security issues easily.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4 text-center">
+          <h4>Community Stats</h4>
+          <p>View resident & facility performance.</p>
         </div>
       </div>
     </div>
-
-    <p ng-if="!residents.length" class="text-center text-muted mt-5">
-      No residents found matching your search.
-    </p>
   </div>
 
   <script>
-    var app = angular.module('eliteApp', []);
+    angular.module('eliteApp', [])
+      .controller('HomeController', function($scope) {
+        $scope.userName = 'Resident';
+        $scope.welcomeShown = false;
 
-    app.controller('ResidentController', function($scope, $http) {
-      // Load JSON data
-      $http.get('residents.json').then(function(response) {
-        $scope.residents = response.data.map(function(r) {
-          r.showDetails = false;
-          r.isHovered = false;
-          return r;
-        });
-      }).catch(function() {
-        alert('Failed to load residents data.');
+        $scope.showWelcome = function() {
+          $scope.welcomeShown = true;
+          $scope.userName = prompt('Enter your name:') || 'Resident';
+        };
       });
-
-      // ng-click: Toggle details
-      $scope.toggleDetails = function(resident) {
-        resident.showDetails = !resident.showDetails;
-      };
-
-      // Mouse events on card
-      $scope.hoverIn = function(resident) {
-        resident.isHovered = true;
-      };
-      $scope.hoverOut = function(resident) {
-        resident.isHovered = false;
-      };
-
-      // ng-focus / ng-blur on search input
-      $scope.onFocus = function() {
-        console.log('Search input focused');
-        // You can add visual feedback here if needed
-      };
-      $scope.onBlur = function() {
-        console.log('Search input blurred');
-      };
-
-      // Mouse events on search box
-      $scope.onMouseEnterSearch = function() {
-        console.log('Mouse entered search box');
-      };
-      $scope.onMouseLeaveSearch = function() {
-        console.log('Mouse left search box');
-      };
-    });
   </script>
 </body>
-</html>
-      background: #f9f9f9;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: left;
-    }
-    th {
-      background-color: #4CAF50;
-      color: white;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-    input, button {
-      padding: 10px;
-      margin: 8px 0;
-      font-size: 16px;
-    }
-    button {
-      background-color: #008CBA;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #006d9c;
-    }
-  </style>
-</head>
-<body ng-controller="studentCtrl">
-
-  <h2>Student Details</h2>
-
-  <!-- Search input with ng-focus & ng-blur -->
-  <input type="text" 
-         placeholder="Search by Course" 
-         ng-model="searchCourse" 
-         ng-focus="onFocus()" 
-         ng-blur="onBlur()">
-
-  <p style="color: #006400;">{{message}}</p>
-
-  <!-- Reset button with ng-click -->
-  <button ng-click="reset()">Reset Search</button>
-
-  <hr>
-
-  <!-- Student Table with filters & directives -->
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Course</th>
-      <th>Fees</th>
-      <th>Joining Date</th>
-      <th>GPA</th>
-    </tr>
-    <tr ng-repeat="s in students | filter:{course: searchCourse}"
-        ng-mouseenter="hoverIn()" 
-        ng-mouseleave="hoverOut()">
-      <td>{{s.id | number}}</td>                  <!-- number filter -->
-      <td>{{s.name | uppercase}}</td>             <!-- uppercase filter -->
-      <td>{{s.course | lowercase}}</td>           <!-- lowercase filter -->
-      <td>{{s.fees | currency:"₹"}}</td>          <!-- currency filter -->
-      <td>{{s.joiningDate | date:'dd-MM-yyyy'}}</td> <!-- date filter -->
-      <td>{{s.gpa}}</td>
-    </tr>
-  </table>
-
-  <p style="color: #8B4513;">{{hoverMessage}}</p>
-
-  <script>
-    var app = angular.module("studentApp", []);
-
-    app.controller("studentCtrl", function($scope, $http) {
-      
-      // Load students.json file
-      $http.get("students.json").then(function(response) {
-        $scope.students = response.data;
-      }).catch(function(error) {
-        console.error("Error loading students.json:", error);
-      });
-
-      // ng-focus
-      $scope.onFocus = function() {
-        $scope.message = "Input field focused!";
-      };
-
-      // ng-blur
-      $scope.onBlur = function() {
-        $scope.message = "Input field lost focus.";
-      };
-
-      // ng-click - reset search
-      $scope.reset = function() {
-        $scope.searchCourse = "";
-      };
-
-      // Mouse enter/leave (ng-mouseenter, ng-mouseleave)
-      $scope.hoverIn = function() {
-        $scope.hoverMessage = "Mouse entered a row!";
-      };
-
-      $scope.hoverOut = function() {
-        $scope.hoverMessage = "Mouse left the row.";
-      };
-
-    });
-  </script>
-
-</body>
-
 </html>
